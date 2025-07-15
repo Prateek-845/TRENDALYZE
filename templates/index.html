@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TRENDALYZE</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .navbar {
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .container {
+      margin-top: 50px;
+    }
+    .video-background {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+    }
+    .nav-link:hover {
+      color: orange !important;
+    }
+    .nav-link.btn {
+      border-radius: 5px;
+    }
+    .modal-content {
+      background-color: #fff;
+      color: #000;
+    }
+    .modal-content.dark {
+      background-color: #000;
+      color: #fff;
+    }
+  </style>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand mx-auto" href="#"> TRENDALYZE </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="#"><i class="fas fa-home"></i> Home</a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="#"
+              id="settingsLink"
+              data-toggle="modal"
+              data-target="#settingsModal"
+            >
+              <i class="fas fa-cog"></i> Settings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link btn btn-outline-primary mr-2"
+              href="#"
+              data-toggle="modal"
+              data-target="#signupModal"
+            >
+              Sign Up
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link btn btn-primary"
+              href="#"
+              data-toggle="modal"
+              data-target="#signinModal"
+            >
+              Sign In
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Video Section -->
+    <div class="carousel slide" id="carouselExampleControls" data-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <video class="video-background" autoplay loop muted>
+            <source src="static/v.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+    </div>
+
+    <!-- Go To Main Page Button -->
+    <div class="text-center mt-4">
+      <a href="main" class="btn btn-primary btn-lg">Go To Main Page</a>
+    </div>
+
+    <!-- Trending Products Section -->
+    <div class="container">
+      <h2 class="text-center my-5">Trending Products</h2>
+      <div class="row mt-4">
+        {% for index, product in trending_products.iterrows() %}
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card">
+            <img
+              src="{{ product['ImageURL'] }}"
+              class="card-img-top"
+              alt="{{ product['Name'] }}"
+              style="height: 200px"
+              onerror="this.onerror=null; this.src='/static/img/placeholder.png';"
+            />
+            <div class="card-body">
+              <h5 class="card-title">{{ truncate(product['Name'],12) }}</h5>
+              <p class="card-text">Brand: {{ product['Brand'] }}</p>
+              <button
+                type="button"
+                class="btn btn-primary"
+                data-toggle="modal"
+                data-target="#productModal{{ index }}"
+              >
+                Buy Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div
+          class="modal fade"
+          id="productModal{{ index }}"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="productModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">
+                  {{ product['Name'] }}
+                </h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <img
+                      src="{{ product['ImageURL'] }}"
+                      class="img-fluid"
+                      alt="{{ product['Name'] }}"
+                      style="height: 200px"
+                      onerror="this.onerror=null; this.src='/static/img/placeholder.png';"
+                    />
+                  </div>
+                  <div class="col-md-8">
+                    <p><strong>Brand:</strong> {{ product['Brand'] }}</p>
+                    <p><strong>Review Count:</strong> {{ product['ReviewCount'] }}</p>
+                    <p><strong>Rating:</strong> {{ product['Rating'] }}</p>
+                    <p><strong>Price:</strong> {{ random_price }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Signin Modal -->
+    <div
+      class="modal fade"
+      id="signinModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="signinModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="signinModalLabel">Sign In</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form action="/signin" method="post">
+              <div class="form-group">
+                <label for="signinUsername">Username</label>
+                <input type="text" class="form-control" id="signinUsername" name="signinUsername" required />
+              </div>
+              <div class="form-group">
+                <label for="signinPassword">Password</label>
+                <input type="password" class="form-control" id="signinPassword" name="signinPassword" required />
+              </div>
+              <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div
+      class="modal fade"
+      id="signupModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="signupModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="signupModalLabel">Sign Up</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form action="/signup" method="post">
+              <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required />
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required />
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required />
+              </div>
+              <button type="submit" class="btn btn-primary">Sign Up</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <h5>Choose Theme:</h5>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="theme" id="defaultTheme" value="default" checked />
+              <label class="form-check-label" for="defaultTheme">Light Theme</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="theme" id="blackTheme" value="black" />
+              <label class="form-check-label" for="blackTheme">Dark Theme</label>
+            </div>
+            <hr />
+            <h5>Zoom:</h5>
+            <button type="button" class="btn btn-primary mr-2" id="zoomIn">Zoom In</button>
+            <button type="button" class="btn btn-primary" id="zoomOut">Zoom Out</button>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="applyTheme">Apply</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript Theme/Zoom -->
+    <script>
+      $(document).ready(function () {
+        $('#settingsLink').click(function (e) {
+          e.preventDefault();
+          $('#settingsModal').modal('show');
+        });
+
+        $('#applyTheme').click(function () {
+          const theme = $('input[name="theme"]:checked').val();
+          if (theme === 'black') {
+            $('body').css({ backgroundColor: 'black', color: 'white' });
+          } else {
+            $('body').css({ backgroundColor: '#f8f9fa', color: 'black' });
+          }
+          $('#settingsModal').modal('hide');
+        });
+
+        $('#zoomIn').click(function () {
+          $('body').css('zoom', '115%');
+        });
+
+        $('#zoomOut').click(function () {
+          $('body').css('zoom', '100%');
+        });
+      });
+    </script>
+  </body>
+</html>
